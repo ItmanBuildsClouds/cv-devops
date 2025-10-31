@@ -1,96 +1,27 @@
-#================================
-# 1. Take existing Route 53 zone
-#================================
-
 data "aws_route53_zone" "cname_record" {
   name = var.domain_name
 }
 
-#================================
-# 2. Create ACM certificate
-#================================
-
-resource "aws_acm_certificate" "dns_cert" {
-    domain_name       = "*.${var.domain_name}"
-    subject_alternative_names = [var.domain_name]
-    validation_method = "DNS"
-    provider = aws.acm
-    lifecycle {
-        #FOR TEST TIME
-        create_before_destroy = false
-    }
-    tags = {
-        Project= var.project_name
-    }
-}
-
-resource "aws_route53_record" "cert_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.dns_cert.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
+module "acm_website" {
+  source = "./modules/acm"
+  domain_name = "${var.domain_name}"
+  project_name = var.project_name
+  zone_id = data.aws_route53_zone.cname_record.zone_id
+  providers = {
+    aws = aws.useast
   }
-
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = data.aws_route53_zone.cname_record.zone_id
 }
 
-resource "aws_acm_certificate_validation" "cert_validation" {
-    certificate_arn = aws_acm_certificate.dns_cert.arn
-    provider = aws.acm
-    validation_record_fqdns = [ for record in aws_route53_record.cert_validation : record.fqdn ]
-}
-
-
-#================================
-# 2. Create ACM for API
-#================================
-resource "aws_acm_certificate" "dns_cert_eu" {
-    domain_name       = "api.${var.domain_name}"
-    validation_method = "DNS"
-    lifecycle {
-        #FOR TEST TIME
-        create_before_destroy = false
-    }
-    tags = {
-        Project= var.project_name
-    }
-}
-
-
-
-resource "aws_route53_record" "cert_validation_eu" {
-  for_each = {
-    for dvo in aws_acm_certificate.dns_cert_eu.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
+module "acm_api" {
+  source = "./modules/acm"
+  domain_name = "api.${var.domain_name}"
+  project_name = var.project_name
+  zone_id = data.aws_route53_zone.cname_record.zone_id
+  providers = {
+    aws = aws.eucentral
   }
-
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = data.aws_route53_zone.cname_record.zone_id
 }
 
-resource "aws_acm_certificate_validation" "cert_validation_eu" {
-    certificate_arn = aws_acm_certificate.dns_cert_eu.arn
-    validation_record_fqdns = [ for record in aws_route53_record.cert_validation_eu : record.fqdn ]
-}
-
-
-#================================
-# 2. S3 Bucket for static page files
-#================================
 module "s3-bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "5.8.2"
@@ -102,6 +33,7 @@ module "s3-bucket" {
   ignore_public_acls = true
   restrict_public_buckets = true
 }
+
 module "sqs" {
   source  = "terraform-aws-modules/sqs/aws"
   version = "5.1.0"
@@ -113,7 +45,7 @@ module "sqs" {
 module "cloudfront" {
   source  = "terraform-aws-modules/cloudfront/aws"
   version = "5.0.1"
-  aliases = ["${var.domain_name}","*.${var.domain_name}"]
+  aliases = ["${var.domain_name}"]
   enabled = true
   is_ipv6_enabled = true
   comment = "Cloudfront for ${var.project_name}"
@@ -145,11 +77,11 @@ module "cloudfront" {
     viewer_protocol_policy = "redirect-to-https"
   }
   viewer_certificate = {
-    acm_certificate_arn = aws_acm_certificate.dns_cert.arn
+    acm_certificate_arn = module.acm_website.certificate_arn
     ssl_support_method = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
-  depends_on = [ aws_acm_certificate_validation.cert_validation, module.s3-bucket ]
+  depends_on = [ module.acm_website ]
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
@@ -177,67 +109,47 @@ data "aws_iam_policy_document" "s3_bucket_policy" {
   }
 }
 
-resource "aws_apigatewayv2_domain_name" "api_domain" {
+module "api_gateway_mapping" {
+  source = "./modules/api_gateway"
+  domain_name = var.domain_name
+  acm_api = module.acm_api.certificate_arn
+  apigateway-v2 = module.apigatewayv2.api_id
+}
+
+module "r53_root" {
+  source = "./modules/route53"
+  domain_name = var.domain_name
+  name = module.cloudfront.cloudfront_distribution_domain_name
+  zone_id = data.aws_route53_zone.cname_record.zone_id
+  zone = module.cloudfront.cloudfront_distribution_hosted_zone_id
+  evaluate_target_health = false
+}
+module "r53_api" {
+  source = "./modules/route53"
   domain_name = "api.${var.domain_name}"
-  domain_name_configuration {
-    certificate_arn = aws_acm_certificate.dns_cert_eu.arn
-    endpoint_type   = "REGIONAL"
-    security_policy = "TLS_1_2"
-  }
-  depends_on = [ aws_acm_certificate_validation.cert_validation ]
+  name = module.api_gateway_mapping.domain_name_target
+  zone_id = data.aws_route53_zone.cname_record.zone_id
+  zone = module.api_gateway_mapping.domain_name_zone_id
+  evaluate_target_health = false
 }
-resource "aws_apigatewayv2_api_mapping" "api_mapping" {
-  api_id = module.apigateway-v2.api_id
-  domain_name = aws_apigatewayv2_domain_name.api_domain.domain_name
-  stage = "$default"
-}
-
-resource "aws_route53_record" "root" {
-    zone_id = data.aws_route53_zone.cname_record.zone_id
-    name = var.domain_name
-    type = "A"
-    alias {
-      name = module.cloudfront.cloudfront_distribution_domain_name
-      zone_id = module.cloudfront.cloudfront_distribution_hosted_zone_id
-      evaluate_target_health = false
-    }
-}
-
-resource "aws_route53_record" "api_record" {
-    zone_id = data.aws_route53_zone.cname_record.zone_id
-    name = "api.${var.domain_name}"
-    type = "A"
-    alias {
-      name = aws_apigatewayv2_domain_name.api_domain.domain_name_configuration[0].target_domain_name
-      zone_id = aws_apigatewayv2_domain_name.api_domain.domain_name_configuration[0].hosted_zone_id
-      evaluate_target_health = false
-    }
-}
-resource "aws_route53_record" "www" {
-    zone_id = data.aws_route53_zone.cname_record.zone_id
-    name = "www.${var.domain_name}"
-    type = "A"
-    alias {
-      name = module.cloudfront.cloudfront_distribution_domain_name
-      zone_id = module.cloudfront.cloudfront_distribution_hosted_zone_id
-      evaluate_target_health = false
-    }
+module "r53_www" {
+  source = "./modules/route53"
+  domain_name = "www.${var.domain_name}"
+  name = module.cloudfront.cloudfront_distribution_domain_name
+  zone_id = data.aws_route53_zone.cname_record.zone_id
+  zone = module.cloudfront.cloudfront_distribution_hosted_zone_id
+  evaluate_target_health = false
 }
 
 resource "aws_s3_object" "index" {
   bucket = module.s3-bucket.s3_bucket_id
   key = "index.html"
-  source = "${path.module}/index.html"
+  source = "${path.module}/src/website/index.html"
   content_type = "text/html"
-  etag = filemd5("${path.module}/index.html")
+  etag = filemd5("${path.module}/src/website/index.html")
 
   depends_on = [ aws_s3_bucket_policy.bucket_policy ]
 }
-
-
-#================================
-# 2. Lambda & IAM Role
-#================================
 
 data "aws_iam_policy_document" "lambda_assume_role_policy" {
   statement {
@@ -306,12 +218,12 @@ resource "aws_iam_role_policy" "lambda_policy" {
   })
 }
 
-
 data "archive_file" "sqs_lambda" {
   type = "zip"
-  source_file = "${path.module}/sqs.py"
-  output_path = "${path.module}/sqs.zip"
+  source_file = "${path.module}/src/lambda/sqs.py"
+  output_path = "${path.module}/src/lambda/sqs.zip"
 }
+
 resource "aws_lambda_function" "sqs_send" {
   filename = data.archive_file.sqs_lambda.output_path
   function_name = "${var.project_name}-sqs-lambda"
@@ -320,7 +232,6 @@ resource "aws_lambda_function" "sqs_send" {
   runtime = "python3.12"
   source_code_hash = data.archive_file.sqs_lambda.output_base64sha256
   depends_on = [ aws_iam_role.lambda_role, aws_iam_role_policy.lambda_policy ]
-  
   environment {
     variables = {
       "SQS_QUEUE_URL" = module.sqs.queue_url
@@ -328,10 +239,7 @@ resource "aws_lambda_function" "sqs_send" {
   }
 }
 
-#================================
-# 2. API Gateway
-#================================
-module "apigateway-v2" {
+module "apigatewayv2" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "5.4.1"
   name = "${var.project_name}-api"
@@ -355,19 +263,18 @@ module "apigateway-v2" {
     }
   }
 }
-
 resource "aws_lambda_permission" "apigw" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.sqs_send.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${module.apigateway-v2.api_execution_arn}/*/*"
+  source_arn = "${module.apigatewayv2.api_execution_arn}/*/*"
 }
 
 data "archive_file" "lambda_ses" {
   type = "zip"
-  source_file = "${path.module}/lambda_ses.py"
-  output_path = "${path.module}/lambda_ses.zip"
+  source_file = "${path.module}/src/lambda/lambda_ses.py"
+  output_path = "${path.module}/src/lambda/lambda_ses.zip"
 }
 
 resource "aws_lambda_function" "ses_sender" {
@@ -384,11 +291,96 @@ resource "aws_lambda_function" "ses_sender" {
     }
   }
 }
+resource "aws_lambda_event_source_mapping" "sqs_trigger" {
+  event_source_arn = module.sqs.queue_arn
+  function_name = aws_lambda_function.ses_sender.arn
+  batch_size = 1
+}
 
-  resource "aws_lambda_event_source_mapping" "sqs_trigger" {
-    event_source_arn = module.sqs.queue_arn
-    function_name = aws_lambda_function.ses_sender.arn
-    batch_size = 1
-  }
-
-
+# Tymczasowo zakomentowane z powodu konfliktu wersji AWS providera
+# module "bedrock_aibot" {
+#   source  = "aws-ia/bedrock/aws"
+#   version = "0.0.31"
+#   foundation_model = "anthropic.claude-3-haiku-20240307-v1:0"
+#   create_guardrail = true
+#   blocked_input_messaging = "Przykro mi, mogę udzielać informacji tylko dotyczących Piotra Itman."
+#   blocked_outputs_messaging = "Przykro mi, mogę udzielać informacji tylko dotyczących Piotra Itman."
+#   filters_config = [
+#     {
+#       input_strength = "MEDIUM"
+#       output_strength = "MEDIUM"
+#       type = "HATE"
+#     },
+#     {
+#       input_strength = "HIGH"
+#       output_strength = "HIGH"
+#       type = "SENSITIVE"
+#     },
+#     {
+#     input_strength = "HIGH"
+#     output_strength = "HIGH"
+#     type = "VIOLENCE"
+#     }
+#   ]
+#   pii_entities_config = [
+#     {
+#       action = "BLOCK"
+#       type = "NAME"
+#     },
+#     {
+#       action = "BLOCK"
+#       type = "ADDRESS"
+#     },
+#     {
+#       action = "BLOCK"
+#       type = "BANK_ACCOUNT_NUMBER"
+#     },
+#     {
+#       action = "BLOCK"
+#       type = "BANK_ROUTING"
+#     },
+#     {
+#       action = "BLOCK"
+#       type = "IP_ADDRESS"
+#     },
+#     {
+#       action = "BLOCK"
+#       type = "AGE"
+#     },
+#     {
+#       action = "BLOCK"
+#       type = "URL"
+#     },
+#     {
+#       action = "BLOCK"
+#       type = "ID"
+#     },
+#     {
+#       action = "BLOCK"
+#       type = "CREDIT_CARD"
+#     },
+#     {
+#       action = "BLOCK"
+#       type = "AWS_CRED"
+#     },
+#   ]
+#   topics_config = [{
+#     name = "Piotr Itman"
+#     examples = ["Gdzie studiował Piotr?", "Jakie są umiejętności Piotra?", "Czy Piotr Itman zajmuję się AWS?", "Jakie certyfikaty posiada Piotrek?"]
+#     type = "ALLOW"
+#   },
+#   {
+#     name = "Porady inwestycyjne"
+#     examples = ["Jakie są ceny nieruchomości?", "Jakie są ceny mieszkania?", "Jakie są ceny domu?", "Jakie są ceny apartamentu?"]
+#     type = "DENY"
+#     definition = "Przykro mi, mogę udzielać informacji tylko dotyczących Piotra Itman."
+#   },
+#   {
+#     name = "Przepis na zupę"
+#     examples = ["Jak zrobić zupę?", "Jak zrobić zupę na krem?", "Jak zrobić zupę na krem z mlekiem?"]
+#     type = "DENY"
+#     definition = "Przykro mi, mogę udzielać informacji tylko dotyczących Piotra Itman."
+#   }
+#   ]
+#   instruction = "Jesteś asystentem, który odpowiada na pytania użytkowników związane z historią oraz danymi kandydata, o którym wszystkie informacje masz w bazie danych. Unikaj halucynacji, nie wymyślaj i trafiaj odpowiedziami na pytania w punkt. Jeśli czegoś nie wiesz - napisz: Nie mam tej informacji"
+# }
