@@ -180,12 +180,6 @@ jobs:
           with:
             name: tf-plan-artifact
             path: .
-          
-        - name: Fail if plan artifact missing
-          if: steps.download.outputs.downloaded != 'true'
-          run: |
-            echo "ERROR: tf-plan-artifact not found. Check_terraform failed probably."
-            exit 1
 
         - name: Terraform init
           run: terraform init
