@@ -5,6 +5,7 @@ on:
         paths:
             - '**.tf'
             - '**.py'
+            - '.github/workflows/**'
     pull_request:
         branches: [ main ]
 
