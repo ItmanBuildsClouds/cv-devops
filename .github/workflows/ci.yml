@@ -48,7 +48,7 @@ jobs:
       continue-on-error: true
 
     - name: Bandit scan
-      run: python -m bandit -r src/lambda/ -f json -o bandit-scan.json
+      run: python -m bandit -r src/lambda/ -f json -o bandit-scan.json || true
       continue-on-error: true
 
     - name: Dodgy scan
@@ -56,7 +56,7 @@ jobs:
       continue-on-error: true
 
     - name: Safety scan
-      run: python -m safety check --json --output safety-scan.json
+      run: python -m safety check --json > safety-scan.json || true
       continue-on-error: true
 
     - name: Upload Artifact with potencial vulnerabilities
