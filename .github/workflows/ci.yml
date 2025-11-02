@@ -1,7 +1,7 @@
 name: CV DevOps Project CI/CD
 on:
     push:
-        branches: [ dev ]
+        branches: [ dev, main]
         paths:
             - '**.tf'
             - '**.py'
@@ -15,6 +15,7 @@ on:
 permissions:
   id-token: write
   contents: read
+  pull-requests: write
 
 
 env:
@@ -155,7 +156,7 @@ jobs:
               });
 
   deploy_app:
-        if: github.event_name == 'pull_request' || github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         runs-on: ubuntu-latest
         timeout-minutes: 5
         steps:
