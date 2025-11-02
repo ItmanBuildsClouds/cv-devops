@@ -156,6 +156,7 @@ jobs:
               body: '**Terraform Plan**\n${{ steps.plan.outputs.plan }}\n'
               });
 
+              
   deploy_app:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         runs-on: ubuntu-latest
