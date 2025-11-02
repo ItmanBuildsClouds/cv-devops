@@ -161,7 +161,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         needs: [ check_python, check_terraform ]
         runs-on: ubuntu-latest
-        timeout-minutes: 5
+        timeout-minutes: 15
         steps:
         - uses: actions/checkout@v5
         - uses: hashicorp/setup-terraform@v3
