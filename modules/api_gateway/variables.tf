@@ -1,10 +1,10 @@
 variable "domain_name" {
-    description = "Domain name"
-    type = string
+  description = "Domain name"
+  type        = string
 }
 variable "acm_api" {
-    type = string
+  type = string
 }
 variable "apigateway-v2" {
-    type = string
+  type = string
 }

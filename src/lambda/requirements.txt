@@ -1,0 +1,9 @@
+boto3
+flake8
+requests
+pytest
+mypy
+safety
+dodgy
+bandit
+pytest-json-report
