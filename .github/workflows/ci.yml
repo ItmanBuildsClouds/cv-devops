@@ -149,13 +149,15 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '**Terraform Plan**\n${{ steps.plan.outputs.plan }}\n'
-              });
-
+            const plan = `${{ steps.plan.outputs.plan }}`.trim();
+                  if (plan && !plan.includes('No changes')) {
+                    await github.rest.issues.createComment({
+                      issue_number: context.issue.number,
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      body: `**Terraform Plan**\n\`\`\`diff\n${plan.replace(/`/g, '\\`')}\n\`\`\``
+                    });
+                  }
 
   deploy_app:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
