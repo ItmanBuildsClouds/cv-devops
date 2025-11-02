@@ -24,7 +24,6 @@ env:
 
 jobs:
   check_python:
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -80,7 +79,6 @@ jobs:
         
 
   check_terraform:
-      if: github.event_name == 'push' || github.event_name == 'pull_request'
       runs-on: ubuntu-latest
       needs: check_python
       timeout-minutes: 10
@@ -161,6 +159,7 @@ jobs:
 
   deploy_app:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        needs: [ check_python, check_terraform ]
         runs-on: ubuntu-latest
         timeout-minutes: 5
         steps:
@@ -174,16 +173,23 @@ jobs:
             aws-region: eu-central-1
 
         - name: Download Plan Artifact
+          id: download
           uses: actions/download-artifact@v4
           with:
             name: tf-plan-artifact
             path: .
+          
+        - name: Fail if plan artifact missing
+          if: steps.download.outputs.downloaded != 'true'
+          run: |
+            echo "ERROR: tf-plan-artifact not found. Check_terraform failed probably."
+            exit 1
 
         - name: Terraform init
           run: terraform init
 
         - name: Terraform apply
-          run: terraform apply -out="plan.tfplan"--auto-approve -input=false
+          run: terraform apply "plan.tfplan"--auto-approve
 
         - name: Deploy OK Slack message
           uses: slackapi/slack-github-action@v1.26.0
