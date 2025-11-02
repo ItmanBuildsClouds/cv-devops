@@ -1,15 +1,15 @@
-variable "zone_id" {
-  type = string
+variable "zone_id"{
+    type = string
 }
 variable "domain_name" {
-  type = string
+    type = string
 }
 variable "name" {
-  type = string
+    type = string
 }
 variable "zone" {
-  type = string
+    type = string
 }
 variable "evaluate_target_health" {
-  type = bool
+    type = bool
 }

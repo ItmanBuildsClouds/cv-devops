@@ -1,21 +1,21 @@
 resource "aws_acm_certificate" "dns_cert" {
-  domain_name               = var.domain_name
-  subject_alternative_names = [var.domain_name]
-  validation_method         = "DNS"
+    domain_name       = "${var.domain_name}"
+    subject_alternative_names = [var.domain_name]
+    validation_method = "DNS"
 
-
-  lifecycle {
-    #FOR TEST TIME
-    create_before_destroy = false
-  }
-  tags = {
-    Project = var.project_name
-  }
+    
+    lifecycle {
+        #FOR TEST TIME
+        create_before_destroy = false
+    }
+    tags = {
+        Project= var.project_name
+    }
 }
 
 resource "aws_acm_certificate_validation" "cert_validation" {
-  certificate_arn         = aws_acm_certificate.dns_cert.arn
-  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
+    certificate_arn = aws_acm_certificate.dns_cert.arn
+    validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
 }
 
 resource "aws_route53_record" "cert_validation" {
