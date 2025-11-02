@@ -6,3 +6,4 @@ mypy
 safety
 dodgy
 bandit
+pytest-json-report
