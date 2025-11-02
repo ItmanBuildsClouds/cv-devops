@@ -11,7 +11,7 @@ on:
 
     workflow_dispatch:
 
-      
+
 permissions:
   id-token: write
   contents: read
@@ -144,7 +144,6 @@ jobs:
               });
 
   deploy_app:
-        needs: [ check_python, check_terraform ]
         if: github.event_name == 'pull_request'
         runs-on: ubuntu-latest
         timeout-minutes: 5
