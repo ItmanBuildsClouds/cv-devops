@@ -6,17 +6,11 @@ terraform {
     }
   }
 }
-
 provider "aws" {
   region = "eu-central-1"
+  alias = "eucentral"
 }
-
-provider "aws" {
-  region = "eu-central-1"
-  alias  = "eucentral"
-}
-
 provider "aws" {
   region = "us-east-1"
-  alias  = "useast"
+  alias = "useast"
 }

@@ -5,16 +5,12 @@ resource "aws_apigatewayv2_domain_name" "api_domain" {
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 
 
 resource "aws_apigatewayv2_api_mapping" "api_mapping" {
-  api_id      = var.apigateway-v2
+  api_id = var.apigateway-v2
   domain_name = aws_apigatewayv2_domain_name.api_domain.domain_name
-  stage       = "$default"
+  stage = "$default"
 }
