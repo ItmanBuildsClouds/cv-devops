@@ -127,7 +127,7 @@ jobs:
         id: plan
         run: |
           terraform plan -input=false -no-color -out=plan.tfplan
-          terraform show -no-color plan.tfplan > plan.tfplan
+          terraform show -no-color plan.tfplan > terraform_plan.txt
           echo "plan<<EOF" >> $GITHUB_OUTPUT
           cat terraform_plan.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -147,7 +147,7 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           script: |
-            github.rest.issues.get({
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo
