@@ -125,7 +125,7 @@ jobs:
         id: plan
         run: |
           terraform plan -input=false -no-color -out=plan.tfplan
-          terraform show -no-color plan.tf > terraform_plan.txt
+          terraform show -no-color plan.tfplan > terraform_plan.txt
           echo "plan<<EOF" >> $GITHUB_OUTPUT
           cat terraform_plan.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -155,7 +155,7 @@ jobs:
           run: terraform init
 
         - name: Terraform apply
-          run: terraform apply --auto-approve -input=false
+          run: terraform apply -out="plan.tfplan"--auto-approve -input=false
 
         - name: Deploy OK Slack message
           uses: slackapi/slack-github-action@v1.26.0
