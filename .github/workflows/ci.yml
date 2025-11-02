@@ -185,6 +185,7 @@ jobs:
             echo "ERROR: tf-plan-artifact not found. Check_terraform failed probably."
             exit 1
 
+            
         - name: Terraform init
           run: terraform init
 
