@@ -4,6 +4,17 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 6.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5.0"
+    }
+  }
+  backend "s3" {
+    bucket       = "cvprojectremotestate"
+    key          = "terraform/state.tfstate"
+    region       = "eu-central-1"
+    use_lockfile = true
+    encrypt      = true
   }
 }
 
