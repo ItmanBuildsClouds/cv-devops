@@ -7,7 +7,7 @@ on:
             - '**.py'
             - '.github/workflows/**'
     pull_request:
-        branches: [ main, dev ]
+        branches: [ main ]
 
     workflow_dispatch:
 
@@ -18,6 +18,7 @@ permissions:
   pull-requests: write
 
 
+  
 env:
   PYTHON_VERSION: 3.12
   TF_PLUGIN_CACHE_DIR: ${{ github.workspace }}/.terraform.d/plugin-cache
@@ -68,7 +69,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: Security Scans Python
+        name: security-scans-python
         path: |
           bandit-scan.json
           safety-scan.json
@@ -91,7 +92,7 @@ jobs:
 
       - name: Setup cache directory
         run: |
-          mkdir -p {{ env.TF_PLUGIN_CACHE_DIR }}
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
 
       - name: Cache Terraform
         uses: actions/cache@v4
@@ -175,22 +176,16 @@ jobs:
         - name: Download Plan Artifact
           id: download
           uses: actions/download-artifact@v4
+          continue-on-error: false
           with:
             name: tf-plan-artifact
             path: .
-          
-        - name: Fail if plan artifact missing
-          if: steps.download.outputs.downloaded != 'true'
-          run: |
-            echo "ERROR: tf-plan-artifact not found. Check_terraform failed probably."
-            exit 1
 
-            
         - name: Terraform init
           run: terraform init
 
         - name: Terraform apply
-          run: terraform apply "plan.tfplan"--auto-approve
+          run: terraform apply plan.tfplan
 
         - name: Deploy OK Slack message
           uses: slackapi/slack-github-action@v1.26.0
@@ -211,6 +206,7 @@ jobs:
         
 
 
+            
 
 
     

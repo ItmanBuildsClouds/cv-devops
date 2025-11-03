@@ -66,11 +66,6 @@ module "cloudfront" {
   price_class         = "PriceClass_100"
   default_root_object = "index.html"
 
-  logging_config = {
-    include_cookies = false
-    bucket          = module.s3-bucket.s3_bucket_id
-    prefix          = "cloudfront_logs"
-  }
 
   create_origin_access_control = true
   origin_access_control = {
