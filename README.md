@@ -141,3 +141,12 @@ The project is fully managed by Terraform.
     * Terraform will automatically validate the ACM certificates using DNS records (if the domain is in Route 53).
     * The `index.html` file from the `/src/website/` directory will be automatically uploaded to S3 (`aws_s3_object.index`).
     * The site will be available at your domain after DNS propagation.
+
+
+  
+## Note on AWS Free Tier
+This project is designed to operate within the AWS Free Tier, ensuring zero costs for low-traffic workloads. For accounts created after July 15, 2025, the Free Plan limits the account to 6 months. To fully utilize the 12-month Free Tier for API Gateway, upgrade to a Paid Plan before the 6-month period ends. Details: [AWS Free Tier](https://aws.amazon.com/free/).
+## Diagram
+The architecture diagram (`./assets/queue_diagram.png`) was created using AWS Architecture Icons under the Creative Commons Attribution 4.0 International License (CC BY 4.0). Source: [AWS Architecture Icons](https://aws.amazon.com/architecture/icons/). The diagram was built with Lucidchart.
+
+
