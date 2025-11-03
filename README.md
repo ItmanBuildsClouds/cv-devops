@@ -1,3 +1,3 @@
 # 
 
-![Diagram Queue Worker](./assets/diagram.pdf)
+![Diagram Queue Worker](./assets/diagram.png)
