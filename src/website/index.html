@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CV - Piotr Itman</title>
     <style>
+
+
+        .project-item h3 a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .project-item h3 a:hover {
+            text-decoration: underline;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -342,7 +353,9 @@
             <div class="section">
                 <h2>O mnie</h2>
                 <p class="profile">
-                    Pasjonat technologii chmurowych.
+                    Jestem studentem Zarządzania na Politechnice Śląskiej, który łączy zrozumienie procesów biznesowych z zaawansowanymi umiejętnościami technicznymi w obszarze DevOps i chmury.
+                    Pasjonuję się automatyzacją i cyberbezpieczeństwem. Samodzielnie rozwijam swoje kompetencje w zakresie IaC (Terraform), konteneryzacji (Docker) oraz chmury AWS. Potwierdzeniem moich umiejętności jest certyfikat AWS AI Practitioner oraz intensywne przygotowania do egzaminu CKA (Certified Kubernetes Administrator).
+                    Jestem gotowy wspierać zespół w budowaniu skalowalnej, bezpiecznej i zautomatyzowanej infrastruktury.
                 </p>
             </div>
 
@@ -350,135 +363,121 @@
                 <h2>Doświadczenie zawodowe</h2>
                 
                 <div class="experience-item">
-                    <h3>-</h3>
-                    <div class="company">-</div>
-                    <div class="date">-</div>
+                    <h3>IT Project Manager (1 miesiąc) - praktyki</h3>
+                    <div class="company">JAROSOFTWARE</div>
+                    <div class="date">Marzec 2025 - Kwiecień 2025</div>
                     <div class="description">
                         <ul>
-                            <li>-</li>
-                            <li>-</li>
-                            <li>-</li>
+                            <li>Zainicjowanie i wdrożenie środowiska Azure DevOps w celu centralizacji i usprawnienia zarządzania projektami stażowymi.</li>
+                            <li>Koordynacja i monitorowanie postępów w projektach realizowanych przez jednoosobowe zespoły stażystów, zapewniając wsparcie i dbając o terminowość zadań.</li>
+                            <li>Administracja i konfiguracja Azure Boards do śledzenia cyklu życia zadań deweloperskich</li>
+                            <li>Udział w definiowaniu i optymalizacji przepływu pracy (workflow) dla projektów, co zwiększyło transparentność i efektywność pracy zespołu.</li>
                         </ul>
                     </div>
                 </div>
-
-                <div class="experience-item">
-                    <h3>-</h3>
-                    <div class="company">-</div>
-                    <div class="date">-</div>
-                    <div class="description">
-                        <ul>
-                            <li>-</li>
-                            <li>-</li>
-                            <li>-</li>
-                            <li>-</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="experience-item">
-                    <h3>-</h3>
-                    <div class="company">-</div>
-                    <div class="date">-</div>
-                    <div class="description">
-                        <ul>
-                            <li>-</li>
-                            <li>-</li>
-                            <li>-</li>
-                            <li>-</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
 
             <div class="section">
-                <h2>-</h2>
+                <h2>Projekty</h2>
                 
                 <div class="project-item">
-                    <h3>-</h3>
-                    <div class="date">-</div>
+                    <h3><a href="https://github.com/ItmanBuildsClouds/cv-devops" target="_blank" rel="noopener noreferrer">CV-DEVOPS PROJECT</a></h3>
+                    <div class="date">Październik 2025 - obecnie</div>
                     <div class="description">
-                        -
+                        <strong>Zaprojektowałem, wdrożyłem i utrzymuję w pełni serverlessową aplikację webową (przedstawiającą moje CV) w ekosystemie AWS,
+                        demonstrując praktyczne umiejętności w zakresie DevOps i architektury chmurowej.</strong>
+                        <ul>
+                            <li>Skonfigurowałem hosting statyczny na S3 z globalną dystrybucją treści przez CloudFront. Zabezpieczyłem połączenie (HTTPS) przy użyciu certyfikatu z ACM i zarządzałem routingiem DNS przez Route53</li>
+                            <li>Zbudowałem backend aplikacji w oparciu o Lambda i API Gateway V2. Służy on do obsługi logiki biznesowej, np. formularza kontaktowego.</li>
+                            <li>Zaimplementowałem kolejkę SQS do asynchronicznego przetwarzania żądań (wysyłki e-maili przez SES).</li>
+                            <li>Zintegrowałem chatbota przy pomocy Amazon Bedrock do obsługi zapytań dotyczących profilu kandydata.</li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="project-item">
-                    <h3>-</h3>
-                    <div class="date">-</div>
+                    <h3><a href="https://github.com/ItmanBuildsClouds/serverless-queue-worker" target="_blank" rel="noopener noreferrer">SERVERLESS QUEUE-WORKER</a></h3>
+                    <div class="date">Wrzesień 2025</div>
                     <div class="description">
-                        -
+                        <strong>Zaprojektowałem i wdrożyłem w pełni asynchroniczny, sterowany zdarzeniami (event-driven) backend API w AWS, 
+                                demonstrując zastosowanie wzorca Producent-Konsument 
+                                do niezawodnego przetwarzania danych.</strong>
+                        <ul>
+                            <li>Cała infrastruktura (API Gateway, 2x Lambda, SQS, DynamoDB) została wdrożona i jest zarządzana jako kod (IaC) przy użyciu Terraform.</li>
+                            <li>Zaimplementowałem produkcyjną konfigurację zdalnego stanu Terraform (Remote State Backend) z użyciem S3 (do przechowywania stanu) i DynamoDB (do blokowania stanu), 
+                                co jest kluczowe dla bezpieczeństwa i pracy zespołowej.</li>
+                            <li>Zastosowałem wzorzec Producent-Konsument: API Gateway z Lambdą (Producent) natychmiast waliduje i kolejkuje zadania w SQS, zapewniając użytkownikowi szybką odpowiedź.</li>
+                            <li>Zintegrowałem chatbota przy pomocy Amazon Bedrock do obsługi zapytań dotyczących profilu kandydata.</li>
+                            <li>Architektura jest w pełni serverless i zoptymalizowana kosztowo, operując w ramach darmowego limitu usług AWS (Free Tier).</li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="project-item">
-                    <h3>-</h3>
-                    <div class="date">-</div>
+                    <h3><a href="https://github.com/ItmanBuildsClouds/3-tier-app" target="_blank" rel="noopener noreferrer">3 TIER APP</a></h3>
+                    <div class="date">Październik 2025</div>
                     <div class="description">
-                        -
+                        <strong>Zaprojektowałem i wdrożyłem w pełni asynchroniczny, sterowany zdarzeniami (event-driven) backend API w AWS, 
+                                demonstrując zastosowanie wzorca Producent-Konsument 
+                                do niezawodnego przetwarzania danych.</strong>
+                        <ul>
+                            <li>Cała infrastruktura (API Gateway, 2x Lambda, SQS, DynamoDB) została wdrożona i jest zarządzana jako kod (IaC) przy użyciu Terraform.</li>
+                            <li>Zaimplementowałem produkcyjną konfigurację zdalnego stanu Terraform (Remote State Backend) z użyciem S3 (do przechowywania stanu) i DynamoDB (do blokowania stanu), 
+                                co jest kluczowe dla bezpieczeństwa i pracy zespołowej.</li>
+                            <li>Zastosowałem wzorzec Producent-Konsument: API Gateway z Lambdą (Producent) natychmiast waliduje i kolejkuje zadania w SQS, zapewniając użytkownikowi szybką odpowiedź.</li>
+                            <li>Zintegrowałem chatbota przy pomocy Amazon Bedrock do obsługi zapytań dotyczących profilu kandydata.</li>
+                            <li>Architektura jest w pełni serverless i zoptymalizowana kosztowo, operując w ramach darmowego limitu usług AWS (Free Tier).</li>
+                        </ul>
                     </div>
                 </div>
             </div>
 
             <div class="section">
-                <h2>-</h2>
+                <h2>Umiejętności techniczne</h2>
                 <div class="skills">
                     <div class="skill-category">
-                        <h4>-</h4>
+                        <h4>Cloud & Infrastructure</h4>
                         <ul>
-                            <li>AWS (EC2, S3, RDS, Lambda, ECS, EKS)</li>
+                            <li>AWS (S3, EC2, APIGW, Bedrock, RDS, Lambda, SES, SQS, IAM)</li>
+                            <li>Networking (VPC, Route53, ACM)</li>
                             <li>Terraform</li>
-                            <li>-</li>
-                            <li>Networking (VPC, Route53)</li>
                         </ul>
                     </div>
 
                     <div class="skill-category">
-                        <h4>-</h4>
+                        <h4>Containers & Orchestration</h4>
                         <ul>
-                            <li>-</li>
-                            <li>-</li>
-                            <li>-</li>
-                            <li>-</li>
+                            <li>Docker</li>
+                            <li>Kubernetes (podstawy; w trakcie przygotowań do CKA)</li>
                         </ul>
                     </div>
 
                     <div class="skill-category">
-                        <h4>-</h4>
+                        <h4>CI/CD & Automation</h4>
                         <ul>
-                            <li>-</li>
-                            <li>-</li>
                             <li>GitHub Actions</li>
-                            <li>-</li>
                         </ul>
                     </div>
 
                     <div class="skill-category">
                         <h4>Monitoring & Logging</h4>
                         <ul>
-                            <li>-</li>
-                            <li>-</li>
                             <li>CloudWatch</li>
-                            <li>-</li>
                         </ul>
                     </div>
 
                     <div class="skill-category">
                         <h4>Programming & Scripting</h4>
                         <ul>
-                            <li>Python</li>
+                            <li>Python (podstawy)</li>
                             <li>Bash</li>
-                            <li>-</li>
-                            <li>YAML/JSON</li>
+                            <li>YAML</li>
                         </ul>
                     </div>
 
                     <div class="skill-category">
                         <h4>Databases</h4>
                         <ul>
-                            <li>-</li>
-                            <li>-</li>
-                            <li>-</li>
-                            <li>-</li>
+                            <li>DynamoDB</li>
                         </ul>
                     </div>
                 </div>
@@ -488,11 +487,11 @@
                 <h2>Wykształcenie</h2>
                 
                 <div class="education-item">
-                    <h3>-</h3>
-                    <div class="school">Politechnika </div>
-                    <div class="date">-</div>
+                    <h3>Zarządzanie, specjalizacja: Małe i Średnie Przedsiębiorstwa</h3>
+                    <div class="school">Politechnika Śląska</div>
+                    <div class="date">2023-obecnie</div>
                     <div class="description">
-                        -
+                        Praca licencjacka (w trakcie): "Zastosowanie ram postępowania Scrum w kontekście Agile w projektach IT."
                     </div>
                 </div>
             </div>
@@ -501,8 +500,7 @@
                 <h2>Certyfikaty</h2>
                 <div class="description">
                     <ul>
-                        <li><strong>-</strong> (2023)</li>
-                        <li><strong>-</strong> (2024)</li>
+                        <li><strong>AWS Certified AI Practitioner</strong> (2025)</li>
                     </ul>
                 </div>
             </div>
@@ -512,10 +510,57 @@
                 <div class="description">
                     <ul>
                         <li><strong>Polski:</strong> Ojczysty</li>
-                        <li><strong>Angielski:</strong> -</li>
+                        <li><strong>Angielski:</strong> B2</li>
                     </ul>
                 </div>
             </div>
+
+                        <div class="section">
+                <h2>Dodatkowe informacje</h2>
+                <div class="description">
+                    <ul>
+                        <li><strong>Prawo jazdy kat. B</strong></li>
+                        <li><strong>Uczestnictwo w kole naukowym cyberbezpieczeństwa SecFault</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Moje posty na LinkedIn</h2>
+                <div class="linkedin-iframe-carousel">
+                    <div class="carousel-iframe-slide">
+                        <div class="iframe-container">
+                            <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7386901001972396032?collapsed=1" 
+                                    frameborder="0" allowfullscreen="" title="Post LinkedIn 1"></iframe>
+                        </div>
+                    </div>
+
+                    <div class="carousel-iframe-slide">
+                        <div class="iframe-container">
+                            <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7383987812804632576?collapsed=1" 
+                                    frameborder="0" allowfullscreen="" title="Post LinkedIn 2"></iframe>
+                        </div>
+                    </div>
+
+                    <div class="carousel-iframe-slide">
+                        <div class="iframe-container">
+                            <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7382170265658478592?collapsed=1" 
+                                    frameborder="0" allowfullscreen="" title="Post LinkedIn 3"></iframe>
+                        </div>
+                    </div>
+
+                    <div class="carousel-iframe-slide">
+                        <div class="iframe-container">
+                            <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7374608379991973888?collapsed=1" 
+                                    frameborder="0" allowfullscreen="" title="Post LinkedIn 4"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
 
             <div class="section">
                 <h2>Skontaktuj się ze mną</h2>
@@ -593,6 +638,73 @@
             }, 5000);
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.carousel-iframe-slide');
+            if (slides.length === 0) return;
+
+            const carousel = document.querySelector('.linkedin-iframe-carousel');
+
+            const dotsContainer = document.createElement('div');
+            dotsContainer.className = 'carousel-dots';
+            carousel.appendChild(dotsContainer);
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'carousel-btn prev';
+            prevBtn.innerHTML = '❮';
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'carousel-btn next';
+            nextBtn.innerHTML = '❯';
+
+            const controls = document.createElement('div');
+            controls.className = 'carousel-controls';
+            controls.appendChild(prevBtn);
+            controls.appendChild(nextBtn);
+            carousel.appendChild(controls);
+
+            let current = 0;
+
+            const showSlide = (i) => {
+                slides.forEach((s, idx) => {
+                    s.classList.toggle('active', idx === i);
+                });
+                document.querySelectorAll('.carousel-dot').forEach((d, idx) => {
+                    d.classList.toggle('active', idx === i);
+                });
+            };
+
+            slides.forEach((_, i) => {
+                const dot = document.createElement('span');
+                dot.className = 'carousel-dot';
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => {
+                    current = i;
+                    showSlide(i);
+                });
+                dotsContainer.appendChild(dot);
+            });
+
+            prevBtn.addEventListener('click', () => {
+                current = (current - 1 + slides.length) % slides.length;
+                showSlide(current);
+            });
+
+            nextBtn.addEventListener('click', () => {
+                current = (current + 1) % slides.length;
+                showSlide(current);
+            });
+
+            showSlide(0);
+        });
+    </script>
+
+
+
+
+
+
+
+
 <div id="chat-container">
   <button id="chat-toggle">?</button>
   <div id="chat-box">
@@ -606,6 +718,147 @@
 </div>
 
 <style>
+
+    .linkedin-iframe-carousel {
+        position: relative;
+        max-width: 100%;
+        margin: 0 auto;
+        overflow: hidden;
+        border-radius: 12px;
+        box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        background: #f8f9fa;
+    }
+
+    .carousel-iframe-slide {
+        display: none;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
+
+    .carousel-iframe-slide.active {
+        display: block;
+        opacity: 1;
+    }
+
+    .iframe-container {
+        position: relative;
+        padding-bottom: 131.58%; /* ~4:3 dla iframe 504x670 */
+         h: 0;
+        overflow: hidden;
+        border-radius: 10px;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .iframe-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .carousel-caption {
+        text-align: center;
+        padding: 16px 10px;
+        background: white;
+    }
+
+    .carousel-caption a {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95em;
+        transition: all 0.3s;
+    }
+
+    .carousel-caption a:hover {
+        background: #5a6fd8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(102,126,234,0.3);
+    }
+
+    .carousel-controls {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        transform: translateY(-50%);
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .carousel-btn {
+        background: rgba(255,255,255,0.95);
+        color: #333;
+        border: none;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        font-size: 1.5em;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        pointer-events: all;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .carousel-btn:hover {
+        background: #667eea;
+        color: white;
+        transform: scale(1.15);
+    }
+
+    .carousel-btn.prev { margin-left: 12px; }
+    .carousel-btn.next { margin-right: 12px; }
+
+    .carousel-dots {
+        text-align: center;
+        padding: 16px 0 8px;
+        background: #f8f9fa;
+    }
+
+    .carousel-dot {
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        margin: 0 6px;
+        background: #bbb;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .carousel-dot.active {
+        background: #667eea;
+        transform: scale(1.4);
+        box-shadow: 0 0 8px rgba(102,126,234,0.5);
+    }
+
+    @media (max-width: 768px) {
+        .iframe-container {
+            padding-bottom: 150%;
+        }
+        .carousel-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2em;
+        }
+        .carousel-caption a {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+    }
   #chat-container {
     position: fixed;
     bottom: 20px;
